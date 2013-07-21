@@ -1,0 +1,16 @@
+<!doctype html>
+<meta charset='utf-8'>
+
+<title>net.js test</title>
+
+<script src='lib/jquery.js'></script>
+<script src='lib/p2p-client.js'></script>
+<script src='lib/require.js'></script>
+<script>
+  require.config({
+    baseUrl: 'src'
+  });
+  require(['src/test.js'], function(test) {
+    $(test);
+  });
+</script>
