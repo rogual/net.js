@@ -76,7 +76,7 @@ API reference
             Games should be updated once per minute so the server doesn't
             prune them.
 
-        lobby.poll(cb) -> cb({date:number, ip:string, data:object}*)
+        lobby.poll(cb) -> cb(err, {date:number, ip:string, data:object}*)
 
             Returns a list of active games.
                 date:  Timestamp of when the game was created, as returned
