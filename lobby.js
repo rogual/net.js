@@ -8,6 +8,7 @@ var games = {};
 
 var app = express();
 
+app.use(express.limit(512));
 app.use(express.logger('tiny'));
 app.use(cors());
 app.use(express.json());
@@ -27,15 +28,23 @@ app.get('/games', function(req, res) {
 
 app.post('/games', function(req, res) {
   var id = req.body.id || generateID();
+  create(id, req, res);
+});
+
+app.post('/games/:id', function(req, res) {
+  create(req.params.id, req, res);
+});
+
+function create(id, req, res) {
   var game = {
     date: Date.now(),
     ip: req.connection.remoteAddress,
-    data: req.body.data
+    data: req.body
   };
   games[id] = game;
 
   res.json(id);
-});
+}
 
 app.delete('/games/:id', function(req, res) {
   var id = req.params.id;

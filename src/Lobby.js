@@ -12,9 +12,9 @@ define(function(require) {
         });
       },
 
-      advertise: function(serverInfo, cb) {
+      advertise: function(id, serverInfo, cb) {
         $.ajax({
-          url: url,
+          url: id ? url + '/' + id : url,
           type: 'POST',
           data: JSON.stringify(serverInfo),
           dataType: 'json',

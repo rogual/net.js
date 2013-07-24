@@ -65,9 +65,9 @@ API reference
         The Lobby module communicates with the lobby server (server/lobby.js)
         to implement server discovery.
 
-        lobby.advertise({ id: string?, data: object })
+        lobby.advertise(id, data, cb)
 
-            Tell the lobby about a new game. If id is omitted, the remote
+            Tell the lobby about a new game. If id is null, the remote
             lobby will generate one for you.
 
             If id matches an existing game, this updates that game instead
@@ -75,6 +75,8 @@ API reference
 
             Games should be updated once per minute so the server doesn't
             prune them.
+
+            Calls cb(id) when done, with the game's ID.
 
         lobby.poll(cb) -> cb(err, {date:number, ip:string, data:object}*)
 
