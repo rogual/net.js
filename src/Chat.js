@@ -1,6 +1,6 @@
 define(function(require) {
 
-  var Util = require('Util');
+  var Util = require('./Util');
 
   return function Chat(players) {
 

@@ -1,7 +1,7 @@
 define(function(require) {
 
-  var Protocol = require('Protocol');
-  var Util = require('Util');
+  var Protocol = require('./Protocol');
+  var Util = require('./Util');
 
   return function RPCTable() {
 

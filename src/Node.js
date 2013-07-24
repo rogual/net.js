@@ -1,7 +1,7 @@
 define(function(require) {
 
-  var Util = require('Util');
-  var RPCTable = require('RPCTable');
+  var Util = require('./Util');
+  var RPCTable = require('./RPCTable');
 
   return function Node(brokerUrl, role, onReady) {
 
@@ -11,7 +11,6 @@ define(function(require) {
 
     var peer = new Peer(brokerUrl, {video: false, audio: false});
     var rpcTable = node.rpcTable = RPCTable();
-    var rpcs = node.rpcs = {};
     var outbox = [];
 
     /*
