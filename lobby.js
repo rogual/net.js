@@ -23,7 +23,7 @@ function generateID() {
 app.get('/games', function(req, res) {
   var list = [];
   Object.keys(games).forEach(function(id) { list.push(games[id]); });
-  res.setHeader('content-type', 'application/json');
+  res.setHeader('content-type', 'application/json; charset=utf-8');
   res.json(list);
 });
 
@@ -44,7 +44,7 @@ function create(id, req, res) {
   };
   games[id] = game;
 
-  res.setHeader('content-type', 'application/json');
+  res.setHeader('content-type', 'application/json; charset=utf-8');
   res.json(id);
 }
 
