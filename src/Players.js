@@ -30,6 +30,11 @@ define(function(require) {
       });
     };
 
+    players.onLoginError = function(msg) {};
+
+    var clientError = node.rpcTable.add(function(conn, msg) {
+      players.onLoginError(msg);
+    });
 
     /*
       Clients call this RPC to log in and get a player object.
@@ -38,18 +43,25 @@ define(function(require) {
       var data = players.authenticate(credentials);
       if (data) {
         var player = players.add(conn, data);
-        conn.player = player;
+        if (player)
+          conn.player = player;
+        else {
+          node.remote(conn, clientError, "Sorry, the server is full.");
+        }
       }
-      else
-        conn.close();
+      else {
+        node.remote(conn, clientError, "login failed");
+      }
     });
 
     /*
-      The server can add/remove players.
+      The server can add/remove players. Returns null if full.
     */
     if (node.role == 'server') {
       players.add = function(connection, data) {
         for (var id=0; players.all[id]; id++);
+        if (id == numSlots)
+          return null;
 
         var player = {
           id: id,

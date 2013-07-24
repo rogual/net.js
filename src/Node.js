@@ -3,23 +3,16 @@ define(function(require) {
   var Util = require('./Util');
   var RPCTable = require('./RPCTable');
 
+  var peer;
+
   return function Node(brokerUrl, role, onReady) {
 
     var node = {};
 
     node.role = role;
 
-    var peer = new Peer(brokerUrl, {video: false, audio: false});
     var rpcTable = node.rpcTable = RPCTable();
     var outbox = [];
-
-    /*
-      Do this stuff when the broker gives us a route.
-    */
-    peer.onroute = function(route) {
-      node.route = route;
-      onReady(node);
-    };
 
     /*
       Called when a message comes in. Route it to the right RPC.
@@ -61,8 +54,8 @@ define(function(require) {
     };
 
     node.close = function() {
-      peer.onconnection = null;
-      peer.close();
+      if (node.connection)
+        node.connection.close();
     };
 
 
@@ -116,8 +109,14 @@ define(function(require) {
 
       node.connect = function(route, cb) {
         cb = cb || function() {};
-        peer.onerror = function(error) { cb(error); };
+        peer.onerror = function(error) {
+          peer.onconnection = peer.onerror = null;
+          cb(error);
+        };
         peer.onconnection = function(connection) {
+          peer.onconnection = null;
+
+          node.connection = connection;
 
           connection.onmessage = function(channel, message) {
             receive(connection, channel, message);
@@ -134,6 +133,25 @@ define(function(require) {
       };
 
     }
+
+    if (peer) {
+      node.peer = peer;
+      node.route = peer.route;
+      onReady(node);
+    }
+    else {
+      node.peer = peer = new Peer(brokerUrl, {video: false, audio: false});
+
+      peer.onroute = function(route) {
+        node.route = route;
+        onReady(node);
+      };
+
+      peer.onerror = function(e) {
+        console.error(e);
+      };
+    }
+
 
   };
 
