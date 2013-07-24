@@ -1,7 +1,7 @@
 define(function(require) {
 
   return function Lobby(url) {
-    return {
+    var lobby = {
 
       poll: function(cb) {
         $.ajax({
@@ -17,13 +17,25 @@ define(function(require) {
           url: url,
           type: 'POST',
           data: JSON.stringify(serverInfo),
+          dataType: 'json',
           contentType: 'application/json',
-          success: function() { if (cb) cb(); },
+          success: function(id) { if (cb) cb(id); },
           error: function(err) { if (cb) cb(err); }
         });
       },
 
+      withdraw: function(id, cb) {
+        $.ajax({
+          url: url + '/' + id,
+          type: 'DELETE',
+          success: function() { cb(); },
+          error: function(e) { cb(e); }
+        });
+      }
+
     };
+
+    return lobby;
   };
 
 });

@@ -8,7 +8,7 @@
   "author": "Robin Allen",
   "license": "BSD",
   "dependencies": {
-    "connect": "2.8.4",
-    "connect-xcors": "0.5.2"
+    "express": "3.3.x",
+    "connect-xcors": "0.5.x"
   }
 }
