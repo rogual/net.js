@@ -5,9 +5,9 @@ define(function(require) {
 
   return function RPCTable() {
 
-    var tab = {};
-
     var rpcs = {};
+
+    var tab = rpcs.tab = {};
 
     var nextId = 0;
 

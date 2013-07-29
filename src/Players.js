@@ -43,8 +43,10 @@ define(function(require) {
       var data = players.authenticate(credentials);
       if (data) {
         var player = players.add(conn, data);
-        if (player)
+        if (player) {
           conn.player = player;
+          player.connection = conn;
+        }
         else {
           node.remote(conn, clientError, "Sorry, the server is full.");
         }
@@ -53,6 +55,8 @@ define(function(require) {
         node.remote(conn, clientError, "login failed");
       }
     });
+
+    players.init = function(player) {};
 
     /*
       The server can add/remove players. Returns null if full.
@@ -75,6 +79,8 @@ define(function(require) {
         }
 
         players.all[id] = player;
+
+        players.init(player);
 
         broadcastPlayers();
 
@@ -99,26 +105,49 @@ define(function(require) {
       };
     }
 
+    players.show = function(conn, player) {
+      return player.data;
+    };
+
+    players.see = function(conn, data) {
+      return data;
+    };
+
+    players.changed = broadcastPlayers;
+
     /*
       broadcastPlayers sends the new player list to everyone using the
       'changed' RPC.
     */
     function broadcastPlayers() {
-      node.broadcast(
-        changed,
-        players.all.map(
-          function(player) { return player ? player.data : null; }
-        )
-      );
+      node.clients.forEach(function(conn) {
+        node.broadcast(
+          changed,
+          players.all.map(
+            function(player) {
+              return player ? players.show(conn, player) : null;
+            }
+          )
+        );
+      });
     }
+
     var changed = node.rpcTable.add(function(conn, newPlayers) {
       if (node.role == 'client') {
-        players.all = newPlayers.map(function(data) {
-          return data ? {
-            connection: null,
-            data: data
-          } : null;
-        });
+
+        for (var i=0; i<players.all.length; i++) {
+          var data = players.see(conn, newPlayers[i]);
+          if (data)
+            if (players.all[i])
+              players.all[i].data = data;
+          else
+            players.all[i] = {
+              connection: null,
+              data: data
+            };
+          else
+            players.all[i] = null;
+        }
       }
       players.onchange(players.all);
     });
